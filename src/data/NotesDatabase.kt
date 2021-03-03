@@ -3,6 +3,7 @@ package com.androiddevs.data
 import com.androiddevs.data.collections.Note
 import com.androiddevs.data.collections.User
 import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
 //  .coroutines makes sure that all requests in the database happens in coroutines
@@ -18,4 +19,9 @@ private val notes = database.getCollection<Note>()
 suspend fun registerUser(user: User): Boolean {
     //  On first request of this function the database will create the collections of users
     return users.insertOne(user).wasAcknowledged()
+}
+
+//  Checking to see if the user already exist
+suspend fun checkIfUserExists(email: String): Boolean {
+    return users.findOne(User::email eq email) != null
 }
