@@ -25,3 +25,10 @@ suspend fun registerUser(user: User): Boolean {
 suspend fun checkIfUserExists(email: String): Boolean {
     return users.findOne(User::email eq email) != null
 }
+
+//  Validate that the user does exist and that the password match
+suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boolean {
+    //  Get the password from the database that the user entered and is making a request with and if the user does not exist return false
+    val actualPassword = users.findOne(User::email eq email)?.password ?: return false
+    return actualPassword == passwordToCheck
+}

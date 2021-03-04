@@ -1,5 +1,6 @@
 package com.androiddevs
 
+import com.androiddevs.routes.loginRoute
 import com.androiddevs.routes.registerRoute
 import io.ktor.application.*
 import io.ktor.features.*
@@ -21,6 +22,7 @@ fun Application.module(testing: Boolean = false) {
     install(Routing) {
         //  All routes to be specified in the routing block
         registerRoute()
+        loginRoute()
     }
     //  Make sure what content the server responds with
     install(ContentNegotiation) {
