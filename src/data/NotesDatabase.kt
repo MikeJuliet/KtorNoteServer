@@ -2,6 +2,7 @@ package com.androiddevs.data
 
 import com.androiddevs.data.collections.Note
 import com.androiddevs.data.collections.User
+import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
@@ -31,4 +32,9 @@ suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boole
     //  Get the password from the database that the user entered and is making a request with and if the user does not exist return false
     val actualPassword = users.findOne(User::email eq email)?.password ?: return false
     return actualPassword == passwordToCheck
+}
+
+//  Retrieving all notes for a specific user
+suspend fun getNotesForUser(email: String): List<Note> {
+    return notes.find(Note::owners contains email).toList()
 }
