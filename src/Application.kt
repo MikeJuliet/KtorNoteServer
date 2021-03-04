@@ -36,6 +36,7 @@ fun Application.module(testing: Boolean = false) {
     //  Authentication
     install(Authentication) {
         //  Configure below
+        configureAuth()
     }
 }
 
