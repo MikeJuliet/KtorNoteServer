@@ -2,6 +2,7 @@ package com.androiddevs.data
 
 import com.androiddevs.data.collections.Note
 import com.androiddevs.data.collections.User
+import io.ktor.html.*
 import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
@@ -37,4 +38,18 @@ suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boole
 //  Retrieving all notes for a specific user
 suspend fun getNotesForUser(email: String): List<Note> {
     return notes.find(Note::owners contains email).toList()
+}
+
+//  Saving or updating database
+suspend fun saveNote(note: Note): Boolean {
+    //  Check to see if the note already exist in the database, to determine if the note should be updated or created
+    val noteExist = notes.findOneById(note.id) != null
+    //  Check condition
+    return if (noteExist) {
+        //  If the note exist, update the note
+        notes.updateOneById(note.id, note).wasAcknowledged()
+    } else {
+        //  If the note does not exist, create it in the database
+        notes.insertOne(note).wasAcknowledged()
+    }
 }
