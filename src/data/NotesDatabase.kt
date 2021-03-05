@@ -7,6 +7,7 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
+import org.litote.kmongo.setValue
 
 //  .coroutines makes sure that all requests in the database happens in coroutines
 private val client = KMongo.createClient().coroutine
@@ -52,4 +53,22 @@ suspend fun saveNote(note: Note): Boolean {
         //  If the note does not exist, create it in the database
         notes.insertOne(note).wasAcknowledged()
     }
+}
+
+//  Delete owner from the list of owners
+suspend fun deleteNoteForUser(email: String, noteId: String): Boolean {
+    //  Finding the corresponding note
+    val note = notes.findOne(Note::id eq noteId, Note::owners contains email)
+    note?.let { singleNote ->
+        //  If the note with the given ID exist and that it belongs to the user with the email that is trying to delete it
+        if (singleNote.owners.size > 1) {
+            //  Note have multiple owners
+            val newOwners = singleNote.owners - email     //  Delete only the user email from the list of owners
+            //  Only update the owners list for the Note with the given ID
+            val updateResult = notes.updateOne(Note::id eq singleNote.id, setValue(Note::owners, newOwners))
+            return updateResult.wasAcknowledged()
+        }
+        //  If the note owner list only have one email assigned to it
+        return notes.deleteOneById(noteId).wasAcknowledged()
+    } ?: return false       //  If there is no note with the given ID
 }
