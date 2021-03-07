@@ -5,6 +5,7 @@ import com.androiddevs.data.collections.User
 import com.androiddevs.data.registerUser
 import com.androiddevs.data.requests.AccountRequest
 import com.androiddevs.data.response.SimpleResponse
+import com.androiddevs.security.getHashWithSalt
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.features.ContentTransformationException
@@ -32,7 +33,7 @@ fun Route.registerRoute(){
             //  Check condition
             if (!userExists){
                 //  If the user does not exist
-                if (registerUser(User(request.email, request.password))){
+                if (registerUser(User(request.email, getHashWithSalt(request.password)))){
                     //  If the creating of the user was successful
                     call.respond(HttpStatusCode.OK,SimpleResponse(true, "Successfully created account"))
                 }else{

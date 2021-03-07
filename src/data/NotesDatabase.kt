@@ -2,6 +2,7 @@ package com.androiddevs.data
 
 import com.androiddevs.data.collections.Note
 import com.androiddevs.data.collections.User
+import com.androiddevs.security.checkHashForPassword
 import io.ktor.html.*
 import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
@@ -33,7 +34,8 @@ suspend fun checkIfUserExists(email: String): Boolean {
 suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boolean {
     //  Get the password from the database that the user entered and is making a request with and if the user does not exist return false
     val actualPassword = users.findOne(User::email eq email)?.password ?: return false
-    return actualPassword == passwordToCheck
+    //  Check password
+    return checkHashForPassword(passwordToCheck, actualPassword)
 }
 
 //  Retrieving all notes for a specific user
